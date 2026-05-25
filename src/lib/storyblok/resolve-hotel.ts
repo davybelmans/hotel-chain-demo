@@ -34,7 +34,7 @@ export async function getAllHotelConfigs(): Promise<HotelConfig[]> {
   cache = data.stories.map((s: StoryblokStory) => ({
     ...s.content,
     locales: s.content.locales?.split(',').map((l: string) => l.trim()) ?? ['nl'],
-  }))
+  })) as HotelConfig[]
   cacheTime = now
 
   return cache!
