@@ -28,7 +28,10 @@ export async function getAllHotelConfigs(): Promise<HotelConfig[]> {
     version: 'draft',
   })
 
-  cache = data.stories.map((s: any) => ({
+  interface StoryblokStory {
+    content: { locales?: string; [key: string]: unknown }
+  }
+  cache = data.stories.map((s: StoryblokStory) => ({
     ...s.content,
     locales: s.content.locales?.split(',').map((l: string) => l.trim()) ?? ['nl'],
   }))

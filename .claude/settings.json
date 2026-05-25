@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(Invoke-WebRequest -Uri \"https://hotel-chain-demo-git-main-standingout.vercel.app/api/debug\" -Method GET -UseBasicParsing 2>&1)"
+      "PowerShell(Invoke-WebRequest -Uri \"https://hotel-chain-demo-git-main-standingout.vercel.app/api/debug\" -Method GET -UseBasicParsing 2>&1)",
+      "PowerShell(Invoke-RestMethod -Uri \"https://api.github.com/repos/davybelmans/hotel-chain-demo/deployments\" -Headers @{\"User-Agent\"=\"claude\"} | Select-Object -First 3 | ForEach-Object { [PSCustomObject]@{ id=$_.id; environment=$_.environment; created_at=$_.created_at } } | Format-Table)"
     ]
   }
 }

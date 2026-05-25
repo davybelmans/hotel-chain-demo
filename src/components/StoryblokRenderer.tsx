@@ -2,7 +2,10 @@ import { Hero } from './blocks/Hero'
 import { RoomCard } from './blocks/RoomCard'
 import { RoomGrid } from './blocks/RoomGrid'
 
+type StoryblokBlok = { component: string; _uid: string; [key: string]: unknown }
+
 // Voeg hier nieuwe blokken toe naarmate je ze aanmaakt
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const components: Record<string, React.ComponentType<any>> = {
   hero: Hero,
   room_card: RoomCard,
@@ -10,7 +13,7 @@ const components: Record<string, React.ComponentType<any>> = {
 }
 
 interface Props {
-  bloks: any[]
+  bloks: StoryblokBlok[]
 }
 
 export function StoryblokRenderer({ bloks }: Props) {

@@ -1,6 +1,6 @@
 interface RoomCardBlok {
   name: string
-  description?: any
+  description?: string | null
   price_from?: number
   image?: { filename: string; alt?: string }
 }

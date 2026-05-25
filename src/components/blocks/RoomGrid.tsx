@@ -1,8 +1,16 @@
 import { RoomCard } from './RoomCard'
 
+interface RoomCardBlok {
+  _uid: string
+  name: string
+  description?: string | null
+  price_from?: number
+  image?: { filename: string; alt?: string }
+}
+
 interface RoomGridBlok {
   title?: string
-  rooms: any[]
+  rooms: RoomCardBlok[]
 }
 
 export function RoomGrid({ blok }: { blok: RoomGridBlok }) {
