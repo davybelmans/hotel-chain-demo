@@ -4,11 +4,11 @@ import type { Metadata } from 'next'
 
 interface Props {
   children: React.ReactNode
-  params: { locale: string }
+  params: Promise<{ locale: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const headersList = headers()
+  const headersList = await headers()
   const folder = headersList.get('x-hotel-folder') ?? 'hotel-alfa'
   const hotel = await getHotelByFolder(folder)
 
@@ -21,7 +21,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function LocaleLayout({ children, params }: Props) {
-  const headersList = headers()
+  const { locale } = await params
+  const headersList = await headers()
   const folder = headersList.get('x-hotel-folder') ?? 'hotel-alfa'
   const localesHeader = headersList.get('x-hotel-locales') ?? 'nl'
   const locales = localesHeader.split(',')
@@ -30,7 +31,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   const primaryColor = hotel?.primary_color ?? '#1a4f6e'
 
   return (
-    <html lang={params.locale}>
+    <html lang={locale}>
       <body
         style={{ '--color-primary': primaryColor } as React.CSSProperties}
         className="min-h-screen bg-white text-gray-900"
@@ -41,34 +42,34 @@ export default async function LocaleLayout({ children, params }: Props) {
           style={{ backgroundColor: 'var(--color-primary)' }}
         >
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-            <a href={`/${params.locale}`} className="text-white text-2xl font-bold tracking-tight">
+            <a href={`/${locale}`} className="text-white text-2xl font-bold tracking-tight">
               {hotel?.hotel_name ?? 'Hotel'}
             </a>
 
             <nav className="flex items-center gap-6">
-              <a href={`/${params.locale}`} className="text-white/80 hover:text-white text-sm transition">
+              <a href={`/${locale}`} className="text-white/80 hover:text-white text-sm transition">
                 Home
               </a>
-              <a href={`/${params.locale}/rooms`} className="text-white/80 hover:text-white text-sm transition">
-                {params.locale === 'fr' ? 'Chambres' : params.locale === 'en' ? 'Rooms' : 'Kamers'}
+              <a href={`/${locale}/rooms`} className="text-white/80 hover:text-white text-sm transition">
+                {locale === 'fr' ? 'Chambres' : locale === 'en' ? 'Rooms' : 'Kamers'}
               </a>
-              <a href={`/${params.locale}/contact`} className="text-white/80 hover:text-white text-sm transition">
+              <a href={`/${locale}/contact`} className="text-white/80 hover:text-white text-sm transition">
                 Contact
               </a>
 
               {/* Taalwisselaar */}
               <div className="flex gap-2 ml-4 border-l border-white/30 pl-4">
-                {locales.map((locale) => (
+                {locales.map((l) => (
                   <a
-                    key={locale}
-                    href={`/${locale}`}
+                    key={l}
+                    href={`/${l}`}
                     className={`text-xs uppercase font-semibold px-2 py-1 rounded transition ${
-                      locale === params.locale
+                      l === locale
                         ? 'bg-white text-gray-900'
                         : 'text-white/70 hover:text-white'
                     }`}
                   >
-                    {locale}
+                    {l}
                   </a>
                 ))}
               </div>

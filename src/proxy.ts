@@ -14,18 +14,9 @@ const PROD_MAP: Record<string, { folder: string; locales: string[]; default_loca
 
 const FALLBACK = { folder: 'hotel-alfa', locales: ['nl', 'fr'], default_locale: 'nl' }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const hostname = request.headers.get('host') ?? ''
   const pathname = request.nextUrl.pathname
-
-  // Skip API routes en statische bestanden
-  if (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
-    pathname.includes('favicon')
-  ) {
-    return NextResponse.next()
-  }
 
   let config
 
@@ -52,13 +43,21 @@ export async function middleware(request: NextRequest) {
   }
 
   // Injecteer hotel info via headers
-  const response = NextResponse.next()
-  response.headers.set('x-hotel-folder', folder)
-  response.headers.set('x-hotel-locales', locales.join(','))
-  response.headers.set('x-hotel-locale', firstSegment)
+  const response = NextResponse.next({
+    request: {
+      headers: new Headers({
+        ...Object.fromEntries(request.headers),
+        'x-hotel-folder': folder,
+        'x-hotel-locales': locales.join(','),
+        'x-hotel-locale': firstSegment,
+      }),
+    },
+  })
   return response
 }
 
 export const config = {
-  matcher: ['/((?!_next|api|favicon.ico).*)'],
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 }

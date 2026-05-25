@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Invoke-WebRequest -Uri \"https://hotel-chain-demo-git-main-standingout.vercel.app/api/debug\" -Method GET -UseBasicParsing 2>&1)"
+    ]
+  }
+}
