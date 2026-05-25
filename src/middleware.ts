@@ -6,6 +6,14 @@ const DEV_MAP: Record<string, { folder: string; locales: string[]; default_local
   '3001': { folder: 'hotel-beta', locales: ['nl', 'en'], default_locale: 'nl' },
 }
 
+// Productie mapping: domein → hotel folder
+const PROD_MAP: Record<string, { folder: string; locales: string[]; default_locale: string }> = {
+  'hotel-chain-demo-git-main-standingout.vercel.app': { folder: 'hotel-alfa', locales: ['nl', 'fr'], default_locale: 'nl' },
+  'hotel-chain-demo.vercel.app': { folder: 'hotel-alfa', locales: ['nl', 'fr'], default_locale: 'nl' },
+}
+
+const FALLBACK = { folder: 'hotel-alfa', locales: ['nl', 'fr'], default_locale: 'nl' }
+
 export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') ?? ''
   const pathname = request.nextUrl.pathname
@@ -19,45 +27,31 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  let folder: string
-  let locales: string[]
-  let defaultLocale: string
+  let config
 
   const isDev = hostname.includes('localhost')
 
   if (isDev) {
-    // In development: gebruik poort om hotel te bepalen
     const port = hostname.split(':')[1] ?? '3000'
-    const devConfig = DEV_MAP[port] ?? DEV_MAP['3000']
-    folder = devConfig.folder
-    locales = devConfig.locales
-    defaultLocale = devConfig.default_locale
+    config = DEV_MAP[port] ?? FALLBACK
   } else {
-    // In productie: ophalen via API
-    const res = await fetch(
-      `${request.nextUrl.origin}/api/hotel-config?domain=${hostname.replace('www.', '')}`
-    )
-    if (!res.ok) {
-      return NextResponse.rewrite(new URL('/not-found', request.url))
-    }
-    const config = await res.json()
-    folder = config.folder_slug
-    locales = config.locales
-    defaultLocale = config.default_locale
+    const clean = hostname.replace('www.', '')
+    config = PROD_MAP[clean] ?? FALLBACK
   }
+
+  const { folder, locales, default_locale } = config
 
   // Controleer of de URL al een geldige locale heeft
   const firstSegment = pathname.split('/')[1]
   const hasLocale = locales.includes(firstSegment)
 
   if (!hasLocale) {
-    // Redirect naar default locale
     return NextResponse.redirect(
-      new URL(`/${defaultLocale}${pathname}`, request.url)
+      new URL(`/${default_locale}${pathname}`, request.url)
     )
   }
 
-  // Injecteer hotel info via headers voor gebruik in pages/layouts
+  // Injecteer hotel info via headers
   const response = NextResponse.next()
   response.headers.set('x-hotel-folder', folder)
   response.headers.set('x-hotel-locales', locales.join(','))
