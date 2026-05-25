@@ -2,7 +2,7 @@ import { headers } from 'next/headers'
 import { NextRequest } from 'next/server'
 
 export async function GET(request: NextRequest) {
-  const headersList = headers()
+  const headersList = await headers()
   
   return Response.json({
     host: request.headers.get('host'),
