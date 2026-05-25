@@ -21,23 +21,28 @@ export async function getAllHotelConfigs(): Promise<HotelConfig[]> {
   const now = Date.now()
   if (cache && now - cacheTime < CACHE_TTL) return cache
 
-  const { data } = await client.getStories({
-    starts_with: 'hotels/',
-    content_type: 'hotel_config',
-    per_page: 100,
-    version: 'draft',
-  })
+  try {
+    const { data } = await client.getStories({
+      starts_with: 'hotels/',
+      content_type: 'hotel_config',
+      per_page: 100,
+      version: 'draft',
+    })
 
-  interface StoryblokStory {
-    content: { locales?: string; [key: string]: unknown }
+    interface StoryblokStory {
+      content: { locales?: string; [key: string]: unknown }
+    }
+    cache = data.stories.map((s: StoryblokStory) => ({
+      ...s.content,
+      locales: s.content.locales?.split(',').map((l: string) => l.trim()) ?? ['nl'],
+    })) as HotelConfig[]
+    cacheTime = now
+  } catch (err) {
+    console.error('[Storyblok] Fout bij ophalen hotel configs:', err)
+    cache = []
   }
-  cache = data.stories.map((s: StoryblokStory) => ({
-    ...s.content,
-    locales: s.content.locales?.split(',').map((l: string) => l.trim()) ?? ['nl'],
-  })) as HotelConfig[]
-  cacheTime = now
 
-  return cache!
+  return cache ?? []
 }
 
 export async function getHotelByDomain(hostname: string): Promise<HotelConfig | null> {

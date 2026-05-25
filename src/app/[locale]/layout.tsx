@@ -7,16 +7,19 @@ interface Props {
   params: Promise<{ locale: string }>
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params: _ }: Props): Promise<Metadata> {
   const headersList = await headers()
   const folder = headersList.get('x-hotel-folder') ?? 'hotel-alfa'
-  const hotel = await getHotelByFolder(folder)
-
-  return {
-    title: {
-      default: hotel?.hotel_name ?? 'Hotel',
-      template: `%s | ${hotel?.hotel_name ?? 'Hotel'}`,
-    },
+  try {
+    const hotel = await getHotelByFolder(folder)
+    return {
+      title: {
+        default: hotel?.hotel_name ?? 'Hotel',
+        template: `%s | ${hotel?.hotel_name ?? 'Hotel'}`,
+      },
+    }
+  } catch {
+    return { title: 'Hotel' }
   }
 }
 
@@ -27,7 +30,12 @@ export default async function LocaleLayout({ children, params }: Props) {
   const localesHeader = headersList.get('x-hotel-locales') ?? 'nl'
   const locales = localesHeader.split(',')
 
-  const hotel = await getHotelByFolder(folder)
+  let hotel = null
+  try {
+    hotel = await getHotelByFolder(folder)
+  } catch (err) {
+    console.error('[Layout] Fout bij ophalen hotel:', err)
+  }
   const primaryColor = hotel?.primary_color ?? '#1a4f6e'
 
   return (
