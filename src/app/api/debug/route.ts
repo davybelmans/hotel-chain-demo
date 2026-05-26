@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
       body_blocks: data.story.content?.body?.length ?? 0,
     }
   } catch (err) {
-    storyError = String(err)
+    storyError = JSON.stringify(err, Object.getOwnPropertyNames(err instanceof Error ? err : Object(err)))
   }
 
   return Response.json({
