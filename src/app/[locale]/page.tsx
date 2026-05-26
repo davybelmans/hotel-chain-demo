@@ -19,8 +19,8 @@ export default async function LocalePage({ params }: Props) {
       language: locale,
     })
     bloks = data.story.content.body ?? []
-  } catch {
-    // Story niet gevonden — toon placeholder
+  } catch (err) {
+    console.error('[Page] Storyblok fetch error:', err)
   }
 
   if (bloks.length === 0) {
