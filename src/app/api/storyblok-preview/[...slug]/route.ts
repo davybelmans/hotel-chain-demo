@@ -9,22 +9,21 @@ import { getHotelByFolder } from '@/lib/storyblok/resolve-hotel'
  *   story slug:   hotels/hotel-beta/pages/home
  *   → GET /api/storyblok-preview/hotels/hotel-beta/pages/home
  *
- * We extract the folder + page and redirect to the real URL.
+ * slug param = ['hotels', 'hotel-beta', 'pages', 'home']
  */
-export async function GET(request: NextRequest) {
-  const pathname = request.nextUrl.pathname
-  // pathname = /api/storyblok-preview/hotels/hotel-beta/pages/home
-  const afterPrefix = pathname.replace('/api/storyblok-preview/', '')
-  const parts = afterPrefix.split('/')
-  // parts = ['hotels', 'hotel-beta', 'pages', 'home']
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string[] }> }
+) {
+  const { slug } = await params
+  // slug = ['hotels', 'hotel-beta', 'pages', 'home']
 
-  const folder = parts[1] // hotel-beta
-  const pageSlug = parts[3] // home, rooms, contact, …
+  const folder = slug[1]   // hotel-beta
+  const pageSlug = slug[3] // home, rooms, contact, …
 
   const hotel = await getHotelByFolder(folder)
   const locale = hotel?.default_locale ?? 'nl'
 
-  // Map Storyblok page slugs to real URL paths
   let targetPath: string
   if (!pageSlug || pageSlug === 'home') {
     targetPath = `/${locale}`
