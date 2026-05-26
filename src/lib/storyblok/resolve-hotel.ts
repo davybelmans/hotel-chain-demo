@@ -26,7 +26,7 @@ export async function getAllHotelConfigs(): Promise<HotelConfig[]> {
       starts_with: 'hotels/',
       content_type: 'hotel_config',
       per_page: 100,
-      version: 'draft',
+      version: 'published',
     })
 
     interface StoryblokStory {

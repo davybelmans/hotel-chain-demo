@@ -15,7 +15,7 @@ export default async function LocalePage({ params }: Props) {
 
   try {
     const { data } = await client.getStory(`hotels/${folder}/pages/home`, {
-      version: 'draft',
+      version: 'published',
       language: locale,
     })
     bloks = data.story.content.body ?? []

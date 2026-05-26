@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const { data } = await client.getStory(storySlug, {
-      version: 'draft',
+      version: 'published',
     })
     storyResult = {
       name: data.story.name,
