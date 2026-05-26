@@ -10,7 +10,7 @@ const DEV_MAP: Record<string, { folder: string; locales: string[]; default_local
 const PROD_MAP: Record<string, { folder: string; locales: string[]; default_locale: string }> = {
   'hotel-chain-demo-git-main-standingout.vercel.app': { folder: 'hotel-alfa', locales: ['nl', 'fr'], default_locale: 'nl' },
   'hotel-chain-demo.vercel.app': { folder: 'hotel-alfa', locales: ['nl', 'fr'], default_locale: 'nl' },
-  'project-f2kx6.vercel.app':{ folder: 'hotel-beta', locales: ['nl', 'en'], default_locale: 'nl' }
+   'project-f2kx6.vercel.app':{ folder: 'hotel-beta', locales: ['nl', 'en'], default_locale: 'nl' },
 }
 
 const FALLBACK = { folder: 'hotel-alfa', locales: ['nl', 'fr'], default_locale: 'nl' }
